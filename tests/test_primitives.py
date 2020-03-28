@@ -9,7 +9,7 @@ Tests for airconics airfoil primitives.
 import pytest
 from airconics.primitives import Airfoil
 import numpy as np
-import OCC.Geom
+from OCC.Core.Geom import Geom_BSplineCurve
 
 
 @pytest.fixture(params=[
@@ -119,7 +119,7 @@ def test_Airfoil_constructor(airfoil_examples):
     assert(Af.Curve is not None)
 
     # Test the python-occ spline object:
-    assert(type(Af.Curve) == OCC.Geom.Handle_Geom_BSplineCurve)
+    assert(type(Af.Curve) == Geom_BSplineCurve)
     assert(Af.Curve.IsNull() == False)
 
     # Check the Trailing Edge X is roughly equal to the chord length
@@ -151,7 +151,7 @@ def test_Airfoil_manual(airfoil_examples):
     assert(Af.Curve is not None)
 
     # Test the python-occ spline object:
-    assert(type(Af.Curve) == OCC.Geom.Handle_Geom_BSplineCurve)
+    assert(type(Af.Curve) == Geom_BSplineCurve)
     assert(Af.Curve.IsNull() == False)
 
     # Check the Trailing Edge X is roughly equal to the chord length
@@ -205,7 +205,7 @@ def test_Selig_Airfoil_Assertions():
 # ---------------------------------------------------------------------------
 # Misc Functions:
 def get_Airfoil_startpoint(Af):
-    curve = Af.Curve.GetObject()
+    curve = Af.Curve
     StartPoint = curve.StartPoint()
     return np.array([StartPoint.X(), StartPoint.Y(), StartPoint.Z()])
 

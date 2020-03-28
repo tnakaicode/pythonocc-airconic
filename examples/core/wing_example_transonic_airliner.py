@@ -96,7 +96,7 @@ if __name__ == "__main__":
                                          SegmentNo=NSeg,
                                          ScaleFactor=ScaleFactor)
 
-    Wing.Display(display)
+    #Wing.Display(display)
 
     for section in Wing._Sections:
         display.DisplayShape(section.Curve, update=True)

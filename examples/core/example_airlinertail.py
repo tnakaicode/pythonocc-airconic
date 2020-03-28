@@ -51,7 +51,7 @@ if __name__ == '__main__':
     # Having some problem with the fin loft: display some airfoils
     # to figure out what's going on:
 #    for section in Fin._Sections:
-#        curve = section.Curve.GetObject()
+#        curve = section.Curve
 #        curve.Scale(gp_Pnt(0., 0., 0.), ScaleFact)
 #        display.DisplayShape(section.Curve, update=True)
 

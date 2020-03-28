@@ -93,5 +93,5 @@ if __name__ == "__main__":
         myChordFunctionAirliner, 
         myAirfoilFunctionAirliner, SegmentNo=NSeg, ScaleFactor=ScaleFactor)
     
-    Wing.Display(display)
+    #Wing.Display(display)
     start_display()

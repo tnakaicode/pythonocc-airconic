@@ -76,7 +76,7 @@ if __name__ == "__main__":
                                         transition=0.4
                                         )
 
-    Wing.Display(display)
+    #Wing.Display(display)
 
     Winglet.Display(display)
 

@@ -74,6 +74,6 @@ if __name__ == "__main__":
         SimpleChordFunction, 
         SimpleAirfoilFunction, SegmentNo=NSeg, ScaleFactor=ScaleFactor)
 
-    Wing.Display(display)
+    #Wing.Display(display)
 
     start_display()

@@ -43,8 +43,8 @@ if __name__ == '__main__':
     start_display()
 
     # If using interactive mode i.e. ipython, Airfoil can be removed with:
-    # display.Context.Erase(Af1_disp.GetObject().GetHandle())
-    # Af1.Curve.GetObject().Delete()   
+    # display.Context.Erase(Af1_disp)
+    # Af1.Curve.Delete()   
     # 
     # Not sure if this truly collects the garbage yet
     #

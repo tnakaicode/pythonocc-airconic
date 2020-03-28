@@ -54,12 +54,14 @@ from OCC.Core.Interface import Interface_Static_SetCVal
 from OCC.Core.IFSelect import IFSelect_RetDone
 from OCC.Core.TDF import TDF_LabelSequence
 from OCC.Core.TCollection import TCollection_ExtendedString
-from OCC.Core.TDocStd import Handle_TDocStd_Document
+from OCC.Core.TDocStd import TDocStd_Document
 from OCC.Core.XCAFApp import XCAFApp_Application
 from OCC.Core.XCAFDoc import (XCAFDoc_DocumentTool_ShapeTool,
                               XCAFDoc_DocumentTool_ColorTool,
                               XCAFDoc_DocumentTool_LayerTool,
                               XCAFDoc_DocumentTool_MaterialTool)
+
+from OCCUtils.Construct import make_edge, make_face, make_pipe, make_wire
 
 # Standard Python libraries
 #from six.moves import range
@@ -72,7 +74,7 @@ def coerce_handle(obj):
     return its handle
     '''
     try:
-        handle = obj.GetHandle()
+        handle = obj
     except:
         # If we reach here, assume that the object is already a handle
         handle = obj
@@ -107,7 +109,7 @@ class assert_isdone(object):
 #    of the curve. """
 #    assert(hasattr(Airfoil, 'Curve')), 'Input object does not have a Curve atribute'
 #
-#    handle = Airfoil.Curve.GetObject()
+#    handle = Airfoil.Curve
 #    if not handle.IsClosed():
 #        try:
 #            EP = handle.EndPoint()
@@ -176,7 +178,7 @@ def BBox_FromExtents(xmin, ymin, zmin, xmax, ymax, zmax):
                             gp_Pnt(xmax, ymax, zmax)).Shape()
     ais_bbox = AIS_Shape(s)
     ais_bbox.SetDisplayMode(AIS_WireFrame)
-    return ais_bbox.GetHandle()
+    return ais_bbox
 
 
 def point_array_to_TColgp_PntArrayType(array, _type=TColgp_Array1OfPnt):
@@ -275,7 +277,7 @@ def points_to_bspline(pnts, deg=3, periodic=False, tangents=None,
         _type = TColgp_HArray1OfPnt
         pnts = point_array_to_TColgp_PntArrayType(pnts, _type)
         tol = 0.001
-        interp = GeomAPI_Interpolate(pnts.GetHandle(), periodic, tol)
+        interp = GeomAPI_Interpolate(pnts, periodic, tol)
         if tangents is not None:
             N = tangents.shape[0]
             if N == 2:
@@ -299,7 +301,7 @@ def points_to_bspline(pnts, deg=3, periodic=False, tangents=None,
 
                 tan_flags = TColStd_HArray1OfBoolean(1, N)
                 tan_flags.Init(True)  # Set all true i.e. enforce all tangents
-                interp.Load(tan_array, tan_flags.GetHandle(), scale)
+                interp.Load(tan_array, tan_flags, scale)
         interp.Perform()
         crv = interp.Curve()
     return crv
@@ -572,15 +574,15 @@ def export_STEPFile_Airconics(AirconicsShapes, filename):
     """
     print("This function is a work in progress. For now, use export_STEPFile")
     # create an handle to a document
-    h_doc = Handle_TDocStd_Document()
+    h_doc = TDocStd_Document()
 
     # Create the application
-    app = XCAFApp_Application.GetApplication().GetObject()
+    app = XCAFApp_Application.GetApplication()
     app.NewDocument(TCollection_ExtendedString("MDTV-CAF"), h_doc)
 
     # Get root assembly
-    doc = h_doc.GetObject()
-    shape_tool = XCAFDoc_DocumentTool_ShapeTool(doc.Main()).GetObject()
+    doc = h_doc
+    shape_tool = XCAFDoc_DocumentTool_ShapeTool(doc.Main())
 #    l_colors = XCAFDoc_DocumentTool_ColorTool(doc.Main())
 #    l_layers = XCAFDoc_DocumentTool_LayerTool(doc.Main())
 #    l_materials = XCAFDoc_DocumentTool_MaterialTool(doc.Main())
@@ -687,7 +689,7 @@ def AddSurfaceLoft(objs, continuity=GeomAbs_C2, check_compatibility=True,
         edges = [make_edge(obj)]
 
         if close_sections:
-            crv = obj.GetObject()
+            crv = obj
             if crv.IsClosed() is False:
                 # Add Finite TE edge
                 TE = make_edge(crv.Value(1), crv.Value(0))
@@ -885,42 +887,9 @@ def mirror(brep, plane='xz', axe2=None, copy=False):
 #        bc = batten_curve(pt1, pt2, height, slope,
 #                          math.radians(i), math.radians(-i))
 #        display.EraseAll()
-#        edge = BRepBuilderAPI_MakeEdge(bc, pl.GetHandle()).Edge()
+#        edge = BRepBuilderAPI_MakeEdge(bc, pl).Edge()
 #        display.DisplayShape(edge, update=True)
 #        time.sleep(0.21)
-
-
-# These functions are from the core_geometry_util examples in pythonocc-core
-def make_edge(*args):
-    edge = BRepBuilderAPI_MakeEdge(*args)
-    with assert_isdone(edge, 'failed to produce edge'):
-        result = edge.Edge()
-        edge.Delete()
-        return result
-
-
-def make_wire(*args):
-    # if we get an iterable, than add all edges to wire builder
-    if isinstance(args[0], list) or isinstance(args[0], tuple):
-        wire = BRepBuilderAPI_MakeWire()
-        for i in args[0]:
-            wire.Add(i)
-        wire.Build()
-        return wire.Wire()
-
-    wire = BRepBuilderAPI_MakeWire(*args)
-    wire.Build()
-    with assert_isdone(wire, 'failed to produce wire'):
-        result = wire.Wire()
-        return result
-
-
-def make_face(*args):
-    face = BRepBuilderAPI_MakeFace(*args)
-    with assert_isdone(face, 'failed to produce face'):
-        result = face.Face()
-        face.Delete()
-        return result
 
 
 def make_pipe_shell(spine, profiles, support=None):
@@ -928,6 +897,7 @@ def make_pipe_shell(spine, profiles, support=None):
         spine = make_wire(make_edge(spine))
     except:
         pass
+    
     pipe = BRepOffsetAPI_MakePipeShell(spine)
     for profile in profiles:
         try:
@@ -938,8 +908,7 @@ def make_pipe_shell(spine, profiles, support=None):
     if support:
         pipe.SetMode(support)
     pipe.Build()
-    with assert_isdone(pipe, 'failed building pipe'):
-        return pipe.Shape()
+    return pipe.Shape()
 
 
 def make_vertex(*args):
@@ -1004,7 +973,7 @@ def PlanarSurf(geomcurve):
         wire = make_wire(make_edge(geomcurve))
     except:
         # If the geomcurve is passed directly rather than by it's handle:
-        wire = make_wire(make_edge(geomcurve.GetHandle()))
+        wire = make_wire(make_edge(geomcurve))
     face = make_face(wire)
     return face
 
@@ -1025,7 +994,7 @@ def project_curve_to_plane(curve, plane, direction):
 
     Returns
     -------
-    Hproj_curve : Handle_Geom_Curve
+    Hproj_curve : Geom_Curve
     """
     from OCC.Core.GeomProjLib import geomprojlib_ProjectOnPlane
 
@@ -1096,7 +1065,7 @@ def points_from_intersection(plane, curve):
     The plane is first converted to a surface As the GeomAPI_IntCS class
     requires this.
     '''
-    intersector = GeomAPI_IntCS(curve.GetHandle(), plane.GetHandle())
+    intersector = GeomAPI_IntCS(curve, plane)
 
     with assert_isdone(intersector, 'failed to calculate intersection'):
         nb_results = intersector.NbPoints()
@@ -1118,7 +1087,7 @@ def points_from_intersection(plane, curve):
 
 #     Parameters
 #     ----------
-#     curvenet : list of Handle_GeomCurve
+#     curvenet : list of GeomCurve
 
 #     Notes
 #     -----
@@ -1130,7 +1099,7 @@ def points_from_intersection(plane, curve):
 # #            fill.Add(make_edge(curve), continuity)
 # #        except TypeError:
 # #            # If curve is given as object rather than handle
-# #            fill.Add(make_edge(curve.GetHandle()), continuity)
+# #            fill.Add(make_edge(curve), continuity)
 # #    fill.Build()
 # #    face = fill.Face()
 # #    return face
@@ -1145,13 +1114,13 @@ def points_from_intersection(plane, curve):
 #         print(type(curve))
 #         adaptor = GeomAdaptor_Curve(curve)
 #         Hadapter = GeomAdaptor_HCurve(adaptor)
-#         constr = GeomPlate_CurveConstraint(Hadapter.GetHandle(), 0)
-#         builder.Add(constr.GetHandle())
+#         constr = GeomPlate_CurveConstraint(Hadapter, 0)
+#         builder.Add(constr)
 #         # first didnt work... attempt 2 :
 # #        edge = make_edge(curve)
 # #        C = BRepAdaptor_HCurve()
 # #        C.ChangeCurve().Initialize(edge)
-# #        Cont = BRepFill_CurveConstraint(C.GetHandle(), 0).GetHandle()
+# #        Cont = BRepFill_CurveConstraint(C, 0)
 # #        builder.Add(Cont)
 # #
 # #    Try adding from wires instead.. attempt 3:
@@ -1162,7 +1131,7 @@ def points_from_intersection(plane, curve):
 #         # Approximate the surface into a bspline surface
 #         surf = builder.Surface()
 #         approx = GeomPlate_MakeApprox(surf, 0.001, 10, 8, 0.001, 0).Surface()
-#         Umin, Umax, Vmin, Vmax = surf.GetObject().Bounds()
+#         Umin, Umax, Vmin, Vmax = surf.Bounds()
 #         print(Umin, Umax, Vmin, Vmax)
 #         print("about to make face:")
 #         face = make_face(approx, 0.1)   # Umin, Umax, Vmin, Vmax, 0.1)
@@ -1226,7 +1195,7 @@ def CutSect(Shape, SpanStation):
                            DivPoints[max_idx].Z())
 
     HChord = GC_MakeSegment(TrailingPoint, LeadingPoint).Value()
-#    Chord = HChord.GetObject()
+#    Chord = HChord
     return Section, HChord
 
 

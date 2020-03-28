@@ -113,8 +113,8 @@ def test_FuselageLongitudinalGuideCurves(empty_fuselage):
         NoseEndX, TailStartX, EndX = fuselage.FuselageLongitudinalGuideCurves(
             fuselage.NoseLengthRatio, fuselage.TailLengthRatio)
 
-    StarboardCurve = HStarboardCurve.GetObject()
-    PortCurve = HPortCurve.GetObject()
+    StarboardCurve = HStarboardCurve
+    PortCurve = HPortCurve
 
     # Could check the curves against a reference here, but this would involve
     # enforcing a particular shape solution. For now, assume that if this

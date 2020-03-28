@@ -29,14 +29,14 @@ if __name__ == "__main__":
                           ChordFactor=ChordFactor,
                           ScaleFactor=ScaleFactor)
 
-    Wing.Display(display)
+    #Wing.Display(display)
     # The engine is to be placed at 30% span
     SpanStation = 0.3
     EngineDia = 2.9
     NacelleLength = 1.95 * EngineDia
 
     EngineSection, HChord = act.CutSect(Wing['Surface'], SpanStation)
-    Chord = HChord.GetObject()
+    Chord = HChord
     CEP = Chord.EndPoint()
     display.DisplayShape(Chord, update=True, color='black')
     # Variables controlling the position of the engine with respect to the wing

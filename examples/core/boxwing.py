@@ -109,6 +109,6 @@ if __name__ == '__main__':
                              ChordFactor=ChordFactor,
                              ScaleFactor=ScaleFactor)
 
-    Wing.Display(display)
+    #Wing.Display(display)
 
     start_display()

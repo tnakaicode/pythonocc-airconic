@@ -22,7 +22,7 @@ import numpy as np
 from .base import AirconicsShape
 
 from OCC.Core.gp import gp_Pnt, gp_Vec, gp_Pln, gp_Dir, gp_Ax2
-from OCC.Core.Geom import Handle_Geom_BSplineCurve, Geom_Plane
+from OCC.Core.Geom import Geom_BSplineCurve, Geom_Plane
 from OCC.Core.GeomAbs import GeomAbs_C2
 from OCC.Core.TopoDS import topods
 
@@ -174,12 +174,12 @@ class Fuselage(AirconicsShape):
             self.AirlinerFuselagePlanView(NoseLengthRatio, TailLengthRatio)
 
         # Generate plan view
-        PlanPortCurve = act.points_to_BezierCurve(AFPVPort).GetHandle()
+        PlanPortCurve = act.points_to_BezierCurve(AFPVPort)
 
         # TODO: How wide is the fuselage (use bounding box)
         # Note: THIS DOESNT WORK AS OCC BOUNDING BOX ROUTINES INCLUDE CURVE
         # POLES. MAY BE ABLE TO WORKAROUND WITH TRIANGULATION
-#        H_PlanPortCurve = PlanPortCurve.GetHandle()     # Get handle of curve
+#        H_PlanPortCurve = PlanPortCurve     # Get handle of curve
 #        PP_Edge = act.make_edge(H_PlanPortCurve)
 #        (Xmin,Ymin,Zmin,Xmax,Ymax,Zmax) = act.ObjectsExtents([PP_Edge])
         (Xmin, Ymin, Zmin) = np.min(AFPVPort, axis=0)
@@ -199,7 +199,7 @@ class Fuselage(AirconicsShape):
         FSVMean = (FSVU + FSVL) / 2.
 
         FSVMeanCurve = act.points_to_BezierCurve(FSVMean)
-        FSVMeanEdge = act.make_edge(FSVMeanCurve.GetHandle())
+        FSVMeanEdge = act.make_edge(FSVMeanCurve)
         self._MeanEdge = FSVMeanEdge
         RuleLinePort = act.make_edge(gp_Pnt(0., 0., 0.),
                                      gp_Pnt(0., -1.1 * abs(Ymax - Ymin), 0.))
@@ -231,7 +231,7 @@ class Fuselage(AirconicsShape):
 #        # Project the plan view onto the mean surface
         HPortCurve = act.project_curve_to_surface(PlanPortCurve, LSPort,
                                                   gp_Dir(0, 0, 100))
-        PortCurve = HPortCurve.GetObject()
+        PortCurve = HPortCurve
 #        # TODO: House-keeping
 #        DeleteObjects([LSPort,PlanPortCurve,ParallelLoftEdgePort,RuleLinePort,
 #                       AftLoftEdgePort])
@@ -261,12 +261,12 @@ class Fuselage(AirconicsShape):
 #        PortCurveSimplified = PlanPortCurve
 
         # Seems easiest to mirror portcurve with handles?
-        h = Handle_Geom_BSplineCurve()
+        h = Geom_BSplineCurve()
         mirror_ax2 = gp_Ax2(gp_Pnt(0, 0, 0), gp_Dir(0, 1, 0))
         c = PortCurve.Copy()
-        c.GetObject().Mirror(mirror_ax2)
+        c.Mirror(mirror_ax2)
         HStarboardCurve = h.DownCast(c)
-#        StarboardCurve = hSt.GetObject()
+#        StarboardCurve = hSt
 
         EndX = Xmax        # This is not correct: just trying to get it working
         return (HStarboardCurve, HPortCurve, FSVUCurve, FSVLCurve,
@@ -295,8 +295,8 @@ class Fuselage(AirconicsShape):
         # Returning the PortCurve and StarboardCurve as Geom_BSplineCurve
         # makes kernel freeze in pythonocc 0.16.5, so needed to carry around a
         # handle instead - very strange bug!
-        PortCurve = HPortCurve .GetObject()
-        StarboardCurve = HStarboardCurve.GetObject()
+        PortCurve = HPortCurve 
+        StarboardCurve = HStarboardCurve
 
         # Compute the stern point coordinates of the fuselage
         Pu = FSVUCurve.EndPoint()
@@ -385,8 +385,8 @@ class Fuselage(AirconicsShape):
 
 #             Fit fuselage external surface
             sections = [act.make_wire(act.make_edge(curve)) for curve in C]
-            guides = ([FSVUCurve.GetHandle(), PortCurve.GetHandle(),
-                       FSVLCurve.GetHandle(), StarboardCurve.GetHandle()])
+            guides = ([FSVUCurve, PortCurve,
+                       FSVLCurve, StarboardCurve])
             guides = [act.make_wire(act.make_edge(guide)) for guide in guides]
             self._Lguides = guides
             self._Csections = sections

@@ -89,7 +89,7 @@ class Airfoil(object):
         points : array of scalar, shape (N, 2)
             The x-z coordinates of points on the airfoils surface
 
-        Curve - OCC.Geom.Handle_Geom_BsplineCurve
+        Curve - OCC.Geom.Geom_BsplineCurve
             The generated airfoil spline
 
         Notes
@@ -369,9 +369,9 @@ class Airfoil(object):
         # Can assume that the chord is from 0,0,0 to 1,0,0 before translation
         h_ChordLine = GC_MakeSegment(gp_Pnt(0, 0, 0),
                                    gp_Pnt(1, 0, 0)).Value()
-        ChordLine = h_ChordLine.GetObject()
+        ChordLine = h_ChordLine
 
-        Curve = self.Curve.GetObject()
+        Curve = self.Curve
 
 #        Scaling:
         Curve.Scale(gp_Pnt(0, 0, 0), self.ChordLength)
@@ -389,13 +389,13 @@ class Airfoil(object):
             ChordLine.Rotate(gp_OY(), -np.radians(self.Twist))
 
 #        Translation:
-#        self.Curve = Handle_Geom_BSplineCurve_DownCast(Curve.Translated(
+#        self.Curve = Geom_BSplineCurve_DownCast(Curve.Translated(
 #                                                        gp_Vec(*self.LE))
 #                                                       )
         Curve.Translate(gp_Vec(*self.LE))
         ChordLine.Translate(gp_Vec(*self.LE))
 
-        self.ChordLine = ChordLine.GetHandle()
+        self.ChordLine = ChordLine
 
         return None
 

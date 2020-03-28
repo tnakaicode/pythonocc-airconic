@@ -355,7 +355,7 @@ class AirconicsShape(AirconicsBase):
                     pass
                 ais.SetColor(color)
             try:
-                context.Context.Display(ais.GetHandle())
+                context.Context.Display(ais)
             except:
                 context.DisplayShape(component)
 

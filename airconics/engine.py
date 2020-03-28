@@ -12,7 +12,7 @@ from .base import AirconicsShape
 import numpy as np
 from .examples import wing_example_transonic_airliner as wingex
 from OCC.Core.gp import gp_Pnt, gp_Vec, gp_OY, gp_Dir
-from OCC.Core.Geom import Handle_Geom_Circle
+from OCC.Core.Geom import Geom_Circle
 from OCC.Core.GC import GC_MakeSegment
 
 
@@ -29,7 +29,7 @@ class Engine(AirconicsShape):
 
     Parameters
     ----------
-    HChord : OCC.Geom.Handle_Geom_TrimmedCurve
+    HChord : OCC.Geom.Geom_TrimmedCurve
         The chord line at which the engine will be fitted. The result of
         OCC.GC.GC_MakeSegment.Value() (can be return from helper function
         CutSect from AirCONICStools).
@@ -116,21 +116,21 @@ class Engine(AirconicsShape):
         HHighlight = act.make_circle3pt([0, 0, HighlightRadius],
                                         [0, -HighlightRadius, 0],
                                         [0, 0, -HighlightRadius])
-        Highlight = HHighlight.GetObject()
+        Highlight = HHighlight
         HHighlightCutterCircle = \
             act.make_circle3pt([0, 0, HighlightRadius * 1.5],
                                [0, -HighlightRadius * 1.5, 0],
                                [0, 0, -HighlightRadius * 1.5])
-        HighlightCutterCircle = HHighlightCutterCircle.GetObject()
+        HighlightCutterCircle = HHighlightCutterCircle
 #         Fan disk for CFD boundary conditions
-        FanCircle = Handle_Geom_Circle.DownCast(
+        FanCircle = Geom_Circle.DownCast(
             Highlight.Translated(gp_Vec(MeanNacelleLength * 0.25, 0, 0)))
         wire = act.make_wire(act.make_edge(FanCircle))
         FanDisk = act.make_face(wire)
         self.AddComponent(FanDisk, 'FanDisk')
 
 #         Aft outflow for CFD boundary conditions
-        BypassCircle = Handle_Geom_Circle.DownCast(
+        BypassCircle = Geom_Circle.DownCast(
             Highlight.Translated(gp_Vec(MeanNacelleLength * 0.85, 0, 0)))
         wire = act.make_wire(act.make_edge(BypassCircle))
         BypassDisk = act.make_face(wire)
@@ -165,7 +165,7 @@ class Engine(AirconicsShape):
 
 #         Build the actual airfoil sections to define the nacelle
         HighlightPointVector = act.Uniform_Points_on_Curve(
-            Highlight.GetHandle(), SectionNo)
+            Highlight, SectionNo)
 
         Sections = []
         TailPoints = []
@@ -180,7 +180,7 @@ class Engine(AirconicsShape):
                                     Rotations[i], Twist,
                                     SeligProfile=AirfoilSeligName).Curve
             Sections.append(Af)
-            TailPoints.append(Af.GetObject().EndPoint())
+            TailPoints.append(Af.EndPoint())
 
         self._sections = Sections
 
@@ -206,7 +206,7 @@ class Engine(AirconicsShape):
                      HighlightRadius * 1.45 + CentreLocation[2])
 
         # Get the chord from its handle
-        Chord = self.HChord.GetObject()
+        Chord = self.HChord
         CP3 = Chord.EndPoint()
         CP4 = Chord.StartPoint()
         self._pylonPts = [CP1, CP2, CP3, CP4]
@@ -221,7 +221,7 @@ class Engine(AirconicsShape):
                                      90, 0, Naca4Profile='0012',
                                      EnforceSharpTE=False)
         self._PylonAf = PylonAf
-        LowerTE = PylonAf.ChordLine.GetObject().EndPoint()
+        LowerTE = PylonAf.ChordLine.EndPoint()
 #        LowerTE = rs.CurveEndPoint(PylonChord)
         PylonTE = GC_MakeSegment(LowerTE, CP4).Value()
         self._PylonTE = PylonTE
@@ -241,7 +241,7 @@ class Engine(AirconicsShape):
 #                                  PylonAf.ChordLength*0.001
 #                                  ).Value()
 #
-#        Pylon_curve = PylonAf.Curve.GetObject()
+#        Pylon_curve = PylonAf.Curve
 #        PylonAf_TE = act.make_edge(Pylon_curve.StartPoint(),
 #                                   Pylon_curve.EndPoint())
 #        PylonAf_Face = act.PlanarSurf(PylonAf.Curve)
@@ -281,13 +281,13 @@ if __name__ == "__main__":
                           ChordFactor=ChordFactor,
                           ScaleFactor=ScaleFactor)
 
-    Wing.Display(display)
+    #Wing.Display(display)
     SpanStation = 0.3              # The engine is to be placed at 30% span
     EngineDia = 2.9
     NacelleLength = 1.95 * EngineDia
 
     EngineSection, HChord = act.CutSect(Wing['Surface'], SpanStation)
-    Chord = HChord.GetObject()
+    Chord = HChord
     CEP = Chord.EndPoint()
     display.DisplayShape(Chord, update=True, color='black')
     # Variables controlling the position of the engine with respect to the wing

@@ -187,7 +187,7 @@ def transonic_airliner(display=None,
     engines = []
     for i, SpanStation in enumerate(SpanStations):
         EngineSection, HChord = act.CutSect(Wing['Surface'], SpanStation)
-        Chord = HChord.GetObject()
+        Chord = HChord
         CEP = Chord.EndPoint()
         Centreloc = [CEP.X()-EngineCtrFwdOfLE*NacelleLength,
                     CEP.Y(), 
@@ -459,6 +459,6 @@ if __name__ == "__main__":
     # To output the rendering as pdf:
 #    from OCC.Core.Graphic3d import (Graphic3d_EF_PDF,
 #                           Graphic3d_EF_PostScript)
-#    display.View.View().GetObject().Export('./Airliner.pdf', Graphic3d_EF_PDF)
+#    display.View.View().Export('./Airliner.pdf', Graphic3d_EF_PDF)
 
     start_display()

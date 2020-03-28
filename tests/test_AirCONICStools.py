@@ -48,7 +48,7 @@ def test_points_to_bspline_nparray():
 
     # This will raise an error if the curve creation didn't work - don't need
     #  to add an assert statement here
-    o = spline.GetObject()
+    o = spline
 
 
 def test_project_curve_to_plane():
@@ -62,10 +62,10 @@ def test_project_curve_to_plane():
                            gp_Pnt(1, 0, 5)).Value()
     direction = gp_Dir(0, 0, 1)
 
-    Hproj_curve = act.project_curve_to_plane(curve, XOY.GetHandle(),
+    Hproj_curve = act.project_curve_to_plane(curve, XOY,
                                             direction)
 
-    proj_curve = Hproj_curve.GetObject()
+    proj_curve = Hproj_curve
 
     # The start and end points of the curve
     p1 = proj_curve.Value(0)
@@ -141,4 +141,4 @@ def check_valid_object(handle):
 
     # This will raise an error if the object creation didn't work - don't need
     #  to add an assert statement here
-    o = handle.GetObject()
+    o = handle
