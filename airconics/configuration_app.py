@@ -17,6 +17,12 @@ import itertools
 
 log = logging.getLogger(__name__)
 
+
+def check_callable(_callable):
+    if not callable(_callable):
+        raise AssertionError("The function supplied is not callable")
+
+
 # Currently only trying qt
 used_backend = load_backend()
 log.info("GUI backend set to: {0}".format(used_backend))
@@ -53,7 +59,8 @@ class Airconics_Viewgrid(QtWidgets.QWidget):
     select_clicked = QtCore.pyqtSignal()
 
     # Note: Some of these have a min target, some have max... misleading
-    data_labels = ['Static Margin', 'Fuel Burn', 'Cost', 'Weight', 'Range', 'Payload']
+    data_labels = ['Static Margin', 'Fuel Burn',
+                   'Cost', 'Weight', 'Range', 'Payload']
 
     colors = itertools.cycle(['b', 'r', 'g', 'm', 'y'])
 
@@ -68,7 +75,6 @@ class Airconics_Viewgrid(QtWidgets.QWidget):
 
         # Matplotlib colour character (different for each instance)
         self.color = next(self.colors)
-
 
         grid = QtGui.QGridLayout(self)
         self.setLayout(grid)
@@ -96,11 +102,9 @@ class Airconics_Viewgrid(QtWidgets.QWidget):
 
         grid.addWidget(data_group, 0, 1)
 
-
         self.select_button = QtGui.QPushButton('Select', self)
 
         grid.addWidget(self.select_button, 1, 0, 1, 2)
-
 
         self.select_clicked.connect(self.Evolve)
 
@@ -279,7 +283,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.resize(size[0], size[1])
 
-
     def centerOnScreen(self):
         '''Centers the window on the screen.'''
         resolution = QtWidgets.QDesktopWidget().screenGeometry()
@@ -302,7 +305,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self._menus[menu_name].addAction(_action)
         except KeyError:
             raise ValueError('the menu item %s does not exist' % menu_name)
-
 
     @QtCore.pyqtSlot()
     def onAnySelectClicked(self):

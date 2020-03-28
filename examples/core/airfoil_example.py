@@ -19,8 +19,7 @@ if __name__ == '__main__':
     # Visualisation with Python-OCC (ensure plot windows are set to qt)
     from OCC.Display.SimpleGui import init_display
     display, start_display, add_menu, add_function_to_menu = init_display()
-    
-    
+
     # ==============================================================================
     # Example: airfoil from Selig-formatted coordinate file. Leading edge point
     # in origin, unit chord along x axis, no rotation around the x or y axes.
@@ -32,22 +31,22 @@ if __name__ == '__main__':
     Rotation = 0
     Twist = 0
     AirfoilSeligName = 'dae11'
-    
-    
+
     # SmoothingPasses = 1   #TODO
-    
+
     # Instantiate class to set up a generic airfoil with these basic parameters
     Af = primitives.Airfoil(LEPoint, ChordLength, Rotation, Twist,
                             SeligProfile=AirfoilSeligName)
-   
-    
+
     display.DisplayShape(Af.Curve, update=True)
     display.DisplayShape(Af.ChordLine, update=True, color='black')
     start_display()
-    
+
     # If using interactive mode i.e. ipython, Airfoil can be removed with:
-#    display.Context.Erase(Af1_disp.GetObject().GetHandle())
-#    Af1.Curve.GetObject().Delete()   # Not sure if this truly collects the garbage yet
-#    
-#    # Or Clear the display:
-#    display.EraseAll()
+    # display.Context.Erase(Af1_disp.GetObject().GetHandle())
+    # Af1.Curve.GetObject().Delete()   
+    # 
+    # Not sure if this truly collects the garbage yet
+    #
+    # Or Clear the display:
+    # display.EraseAll()

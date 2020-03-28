@@ -14,7 +14,7 @@ if __name__ == "__main__":
     from OCC.Display.SimpleGui import init_display
     display, start_display, add_menu, add_function_to_menu = init_display()
 
-#    Generate a wing first to attach the engine to
+    # Generate a wing first to attach the engine to
     P = (0, 0, 0)
 
     SegmentNo = 10
@@ -30,9 +30,10 @@ if __name__ == "__main__":
                           ScaleFactor=ScaleFactor)
 
     Wing.Display(display)
-    SpanStation = 0.3              # The engine is to be placed at 30% span
+    # The engine is to be placed at 30% span
+    SpanStation = 0.3
     EngineDia = 2.9
-    NacelleLength = 1.95*EngineDia
+    NacelleLength = 1.95 * EngineDia
 
     EngineSection, HChord = act.CutSect(Wing['Surface'], SpanStation)
     Chord = HChord.GetObject()
@@ -42,15 +43,15 @@ if __name__ == "__main__":
     EngineCtrFwdOfLE = 0.98
     EngineCtrBelowLE = 0.35
     Scarf_deg = 4
-    Centreloc = [CEP.X()-EngineCtrFwdOfLE*NacelleLength,
+    Centreloc = [CEP.X() - EngineCtrFwdOfLE * NacelleLength,
                  CEP.Y(),
-                 CEP.Z()-EngineCtrBelowLE*NacelleLength]
+                 CEP.Z() - EngineCtrBelowLE * NacelleLength]
 
 #   Now build the engine and its pylon
     eng1 = Engine(HChord,
                   CentreLocation=Centreloc,
                   ScarfAngle=Scarf_deg,
-                  HighlightRadius=EngineDia/2.0,
+                  HighlightRadius=EngineDia / 2.0,
                   MeanNacelleLength=NacelleLength)
 
 #    Display Engine Components:

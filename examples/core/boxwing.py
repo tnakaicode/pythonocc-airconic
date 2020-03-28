@@ -31,8 +31,8 @@ def myTwistFunctionBoxWing(Epsilon):
     # User-defined function describing the variation of twist as a function
     # of the leading edge coordinate
     RootTwist = 0
-    TipTwist  = 0
-    return RootTwist + Epsilon*TipTwist
+    TipTwist = 0
+    return RootTwist + Epsilon * TipTwist
 
 
 def myChordFunctionBoxWing(Epsilon):
@@ -45,7 +45,7 @@ def myAirfoilFunctionBoxWing(Epsilon, LEPoint, ChordFunct, ChordFactor,
                              DihedralFunct, TwistFunct):
     # Defines the variation of cross section as a function of Epsilon
 
-    AirfoilChordLength = (ChordFactor*ChordFunct(Epsilon)) / \
+    AirfoilChordLength = (ChordFactor * ChordFunct(Epsilon)) / \
         np.cos(np.radians(TwistFunct(Epsilon)))
 
     SmoothingPasses = 1
@@ -84,6 +84,7 @@ def mySweepAngleFunctionBoxWing(Epsilon):
     SweepArray = np.array([S1, S1, S2, S2])
 
     return np.interp(Epsilon, EpsArray, SweepArray)
+
 
 if __name__ == '__main__':
     # Initialise the display

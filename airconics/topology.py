@@ -65,7 +65,7 @@ class TreeNode(object):
 
         if type(part) not in FUNCTIONS.values():
             raise TypeError("Not a recognised part type: {}. Should be {}"
-                .format(type(part), FUNCTIONS.values()))
+                            .format(type(part), FUNCTIONS.values()))
         else:
             func_str = FUNCTIONS_INV[type(part)]
         self.func = func_str
@@ -125,6 +125,7 @@ class Topology(AirconicsCollection):
         AIAA SciTech, American Institute of Aeronautics and Astronautics,
         jan 2014.
     """
+
     def __init__(self, parts={},
                  construct_geometry=False):
 
@@ -182,8 +183,8 @@ class Topology(AirconicsCollection):
         output = ''
 
         for i, node in enumerate(self._Tree):
-#            If node has a non zero arity, there is some nested printing
-#            required, otherwise node is a terminal:
+            #            If node has a non zero arity, there is some nested printing
+            #            required, otherwise node is a terminal:
             if node.func == '|':
                 # Mirror lines are a special case: simply put a line an skip
                 # to next iteration
@@ -291,8 +292,8 @@ class Topology(AirconicsCollection):
                     output += ('%d [label="%s", fillcolor="%s", shape="%s"] ;\n'
                                % (i, node.name, fill, SHAPES[node.func]))
                     # Add a point below to allow orthogonal branching in graphs
-                    output += ('p%d [shape=point, color=none];\n' %(i))
-                    output += ('%d -> p%d;\n' %(i, i))
+                    output += ('p%d [shape=point, color=none];\n' % (i))
+                    output += ('%d -> p%d;\n' % (i, i))
                 else:
                     output += ('%d [label="%s", fillcolor="%s", shape="%s"] ;\n'
                                % (i, node.name, fill, SHAPES[node.func]))

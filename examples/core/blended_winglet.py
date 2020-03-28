@@ -24,11 +24,11 @@ def myTwistFunction(Epsilon):
     """User-defined function describing the variation of twist as a function
     of the leading edge coordinate."""
     RootTwist = 0
-    TipTwist  = -2
-    return RootTwist + Epsilon*TipTwist
+    TipTwist = -2
+    return RootTwist + Epsilon * TipTwist
 
 
-myChordFunction = act.Generate_InterpFunction([1, 0.33], [0,1])
+myChordFunction = act.Generate_InterpFunction([1, 0.33], [0, 1])
 
 
 @liftingsurface.airfoilfunct
@@ -72,9 +72,9 @@ if __name__ == "__main__":
                                          ChordFactor=ChordFactor)
 
     Winglet = Wing.Fit_BlendedTipDevice(rootchord_norm=0.8, spanfraction=0.15,
-        cant=15,
-        transition=0.4
-        )
+                                        cant=15,
+                                        transition=0.4
+                                        )
 
     Wing.Display(display)
 
@@ -82,15 +82,15 @@ if __name__ == "__main__":
 
     # Why not also try a C wing made from two recursively added winglets?
     Winglet2 = Winglet.Fit_BlendedTipDevice(rootchord_norm=0.8, spanfraction=1,
-        transition=0.35, cant=-90, sweep=20, taper=0.8)
+                                            transition=0.35, cant=-90, sweep=20, taper=0.8)
 
     Winglet2.Display(display)
 
     from airconics.base import AirconicsCollection
 
-    geometry = AirconicsCollection(parts={'Wing': Wing, 'Winglet':Winglet, 'CWinglet':Winglet2})
+    geometry = AirconicsCollection(
+        parts={'Wing': Wing, 'Winglet': Winglet, 'CWinglet': Winglet2})
 
     # geometry.Write('C_Wing.step')
 
     start_display()
-

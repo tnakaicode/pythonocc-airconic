@@ -7,40 +7,41 @@ Created on Fri Dec  4 11:58:52 2015
 @author: pchambers
 """
 # Geometry Manipulation libraries:
-import OCC.Bnd
+#import OCC.Core.Bnd
+from OCC.Core.Bnd import Bnd_B2d, Bnd_Box
 from OCC.Core.AIS import AIS_WireFrame, AIS_Shape
 from OCC.Core.Geom import Geom_BezierCurve
 from OCC.Core.GeomAPI import (GeomAPI_PointsToBSpline, GeomAPI_IntCS,
-                         GeomAPI_Interpolate)
+                              GeomAPI_Interpolate)
 from OCC.Core.BRepBndLib import brepbndlib_Add
 from OCC.Core.TColgp import (TColgp_Array1OfPnt, TColgp_HArray1OfPnt,
-                        TColgp_Array1OfVec)
+                             TColgp_Array1OfVec)
 from OCC.Core.TColStd import TColStd_HArray1OfBoolean
-from OCC.Core.BRepOffsetAPI import  (BRepOffsetAPI_ThruSections,
-                                BRepOffsetAPI_MakePipeShell)
+from OCC.Core.BRepOffsetAPI import (BRepOffsetAPI_ThruSections,
+                                    BRepOffsetAPI_MakePipeShell)
 from OCC.Core.BRepBuilderAPI import (BRepBuilderAPI_MakeWire,
-                                BRepBuilderAPI_MakeEdge,
-                                BRepBuilderAPI_Transform,
-                                BRepBuilderAPI_MakeFace,
-                                BRepBuilderAPI_GTransform,
-                                BRepBuilderAPI_MakeVertex)
+                                     BRepBuilderAPI_MakeEdge,
+                                     BRepBuilderAPI_Transform,
+                                     BRepBuilderAPI_MakeFace,
+                                     BRepBuilderAPI_GTransform,
+                                     BRepBuilderAPI_MakeVertex)
 from OCC.Core.BRepPrimAPI import (BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCone,
-                             BRepPrimAPI_MakeHalfSpace,
-                             BRepPrimAPI_MakeSphere)
+                                  BRepPrimAPI_MakeHalfSpace,
+                                  BRepPrimAPI_MakeSphere)
 from OCC.Core.BRepAlgoAPI import BRepAlgoAPI_Section, BRepAlgoAPI_Cut
 from OCC.Core.gp import (gp_Trsf, gp_Ax2, gp_Pnt, gp_Dir, gp_Vec, gp_Pln,
-                    gp_GTrsf, gp_Mat, gp_XYZ)
+                         gp_GTrsf, gp_Mat, gp_XYZ)
 from OCC.Core.GeomAbs import GeomAbs_C2
-from OCC.Core.TopoDS import *
-from OCC.Core.TopAbs import *
+from OCC.Core.TopoDS import TopoDS_Shape, topods_Vertex, topods_Face, topods_Edge
+from OCC.Core.TopAbs import TopAbs_EDGE, TopAbs_FACE, TopAbs_VERTEX
 from OCC.Core.TopExp import TopExp_Explorer
 from OCC.Core.GC import GC_MakeCircle, GC_MakeSegment
 from OCC.Core.Approx import Approx_ChordLength
 from OCC.Core.GCPnts import GCPnts_UniformAbscissa
 from OCC.Core.GeomAdaptor import GeomAdaptor_Curve, GeomAdaptor_HCurve
 from OCC.Core.GeomPlate import (GeomPlate_CurveConstraint,
-                           GeomPlate_BuildPlateSurface,
-                           GeomPlate_MakeApprox)
+                                GeomPlate_BuildPlateSurface,
+                                GeomPlate_MakeApprox)
 from OCC.Core.BRepAdaptor import BRepAdaptor_Curve
 from OCC.Core.BRepFeat import BRepFeat_SplitShape
 from OCC.Core.TopTools import TopTools_ListIteratorOfListOfShape
@@ -56,12 +57,12 @@ from OCC.Core.TCollection import TCollection_ExtendedString
 from OCC.Core.TDocStd import Handle_TDocStd_Document
 from OCC.Core.XCAFApp import XCAFApp_Application
 from OCC.Core.XCAFDoc import (XCAFDoc_DocumentTool_ShapeTool,
-                         XCAFDoc_DocumentTool_ColorTool,
-                         XCAFDoc_DocumentTool_LayerTool,
-                         XCAFDoc_DocumentTool_MaterialTool)
+                              XCAFDoc_DocumentTool_ColorTool,
+                              XCAFDoc_DocumentTool_LayerTool,
+                              XCAFDoc_DocumentTool_MaterialTool)
 
 # Standard Python libraries
-from six.moves import range
+#from six.moves import range
 import numpy as np
 
 
@@ -84,6 +85,7 @@ class assert_isdone(object):
     specified in error_statement
     -> this is from the pythonocc-utils utility-may not use it?
     '''
+
     def __init__(self, to_check, error_statement):
         self.to_check = to_check
         self.error_statement = error_statement
@@ -99,7 +101,7 @@ class assert_isdone(object):
 
 
 # TODO: Add TE function (required for creating tip face)
-#def AddTEtoOpenAirfoil(Airfoil):
+# def AddTEtoOpenAirfoil(Airfoil):
 #    """If the airfoil curve given as an argument is open at the trailing edge,
 #    adds a line between the ends of the curve and joins this with the rest
 #    of the curve. """
@@ -128,10 +130,10 @@ def ObjectsExtents(breps, tol=1e-6, as_vec=False):
     ----------
     breps : list of TopoDS_Shape
         The shapes to be added for bounding box calculation
-    
+
     tol : float (default=1e-6)
         Tolerance for bounding box calculation
-    
+
     as_vec : bool (default=False)
         If true, returns minimum and maximum points as tuple of gp_Vec
 
@@ -139,7 +141,7 @@ def ObjectsExtents(breps, tol=1e-6, as_vec=False):
     -------
     xmin, ymin, zmin, xmax, ymax, zmax : scalar
         the min and max points of bbox (returned if as_vec=False)
-    
+
     ( gp_Vec(xmin, ymin, zmin), gp_Vec(xmax, ymax, zmax) ) : tuple of gp_Vec
         the min and max points of bbox (returned in as_vec=True)
 
@@ -150,7 +152,7 @@ def ObjectsExtents(breps, tol=1e-6, as_vec=False):
     control points of NURBS curves in bounding box calculation
     """
 
-    bbox = OCC.Bnd.Bnd_Box()
+    bbox = Bnd_Box()
     bbox.SetGap(tol)
 
     try:
@@ -252,11 +254,11 @@ def points_to_bspline(pnts, deg=3, periodic=False, tangents=None,
 
     continuity : OCC.GeomAbs.GeomAbs_XX type (default C2)
         The order of continuity (C^0, C^1, C^2, G^0, ....)    
-    
+
     Returns
     -------
     crv : OCC.Geom.BSplineCurve
-    
+
     Notes
     -----
 
@@ -267,7 +269,8 @@ def points_to_bspline(pnts, deg=3, periodic=False, tangents=None,
         # Fit the curve to the point array
         deg_min = deg
         deg_max = deg
-        crv = GeomAPI_PointsToBSpline(pnts, deg_min, deg_max, continuity).Curve()
+        crv = GeomAPI_PointsToBSpline(
+            pnts, deg_min, deg_max, continuity).Curve()
     else:
         _type = TColgp_HArray1OfPnt
         pnts = point_array_to_TColgp_PntArrayType(pnts, _type)
@@ -281,20 +284,21 @@ def points_to_bspline(pnts, deg=3, periodic=False, tangents=None,
                                 scale)
                 except:
                     # Python 3 issue: using * on numpy array breaks gp_Vec
-                        interp.Load(gp_Vec(*tangents[0, :].tolist()),
-                                    gp_Vec(*tangents[1, :].tolist()),
-                                    scale)
+                    interp.Load(gp_Vec(*tangents[0, :].tolist()),
+                                gp_Vec(*tangents[1, :].tolist()),
+                                scale)
             else:
                 tan_array = TColgp_Array1OfVec(1, N)
                 for i in range(1, N + 1):
                     try:
-                        tan_array.SetValue(i, gp_Vec(*tangents[i-1, :]))
+                        tan_array.SetValue(i, gp_Vec(*tangents[i - 1, :]))
                     except TypeError:
                         # Python 3 issue: using * on numpy array breaks gp_Vec
-                        tan_array.SetValue(i, gp_Vec(*tangents[i-1,:].tolist()))
+                        tan_array.SetValue(
+                            i, gp_Vec(*tangents[i - 1, :].tolist()))
 
                 tan_flags = TColStd_HArray1OfBoolean(1, N)
-                tan_flags.Init(True)   #Set all true i.e. enforce all tangents
+                tan_flags.Init(True)  # Set all true i.e. enforce all tangents
                 interp.Load(tan_array, tan_flags.GetHandle(), scale)
         interp.Perform()
         crv = interp.Curve()
@@ -383,13 +387,13 @@ def transform_nonuniformal(brep, factors, vec=[0, 0, 0], copy=False):
 
 def FilletFaceCorners(face, radius):
     """Fillets the corners of the input face
-    
+
     Parameters
     ----------
     face : TopoDS_Face
-        
+
     radius : the Fillet radius
-    
+
     Returns
     -------
     """
@@ -411,11 +415,11 @@ def FilletFaceCorners(face, radius):
 
 def ExtrudeFace(face, vec=gp_Vec(1, 0, 0)):
     """Extrudes a face by input vector
-    
+
     Parameters
     ----------
     face : TopoDS_Face
-    
+
     vec : OCC.gp.gp_Vec
         The offset vector to extrude through
 
@@ -423,7 +427,7 @@ def ExtrudeFace(face, vec=gp_Vec(1, 0, 0)):
     -------
     shape : TopoDS_Shape
         The extruded shape
-    
+
     Notes
     -----
     Uses BRepBuilderAPI_MakePrism
@@ -436,7 +440,7 @@ def ExtrudeFace(face, vec=gp_Vec(1, 0, 0)):
 
 def SplitShapeFromProjection(shape, wire, direction, return_section=True):
     """Splits shape by the projection of wire onto its face
-    
+
     Parameters
     ----------
     shape : TopoDS_Shape    
@@ -455,10 +459,10 @@ def SplitShapeFromProjection(shape, wire, direction, return_section=True):
     -------
     newshape : TopoDS_Shape
         input shape with wire subtracted
-    
+
     section : the shape which was substracted
         (returned only if return_section is true)
-    
+
     Notes
     -----
     Currently assumes splits the first face only
@@ -514,9 +518,9 @@ def coslin(TransitionPoint, NCosPoints=24, NLinPoints=24):
     NCosPoints : int
         Number of cosine points used (same as input)
     """
-    angles = np.linspace(0, np.pi/2., NCosPoints)
-    cos_pts = TransitionPoint * (1.-np.cos(angles))
-    lin_pts = np.linspace(TransitionPoint, 1., NLinPoints+1)
+    angles = np.linspace(0, np.pi / 2., NCosPoints)
+    cos_pts = TransitionPoint * (1. - np.cos(angles))
+    lin_pts = np.linspace(TransitionPoint, 1., NLinPoints + 1)
     # Combine points and Remove first linear point (already in cos_pts):
     Abscissa = np.hstack((cos_pts, lin_pts[1:]))
     return Abscissa, NCosPoints
@@ -547,7 +551,7 @@ def export_STEPFile(shapes, filename):
     return status
 
 
-#def export_STLFile(AC_Shapes, filename):
+# def export_STLFile(AC_Shapes, filename):
 #    """Writes a component stl file for each shape in input AirCONICS shapes"""
 #    try:
 #        for shape in AC_Shapes:
@@ -601,7 +605,7 @@ def export_STEPFile_Airconics(AirconicsShapes, filename):
     return status
 
 
-#def import_STEPFile(shapes, filename):
+# def import_STEPFile(shapes, filename):
 #    # TODO: initialize the STEP importer
 #    step_writer = STEPControl_Reader()
 #
@@ -621,16 +625,16 @@ def AddSurfaceLoft(objs, continuity=GeomAbs_C2, check_compatibility=True,
     objs : list of python classes
         Each obj is expected to have an obj.Curve attribute :
         see airconics.primitives.airfoil class
-    
+
     continuity : OCC.GeomAbs.GeomAbs_XX type (default C2)
         The order of continuity (C^0, C^1, C^2, G^0, ....)
-    
+
     check_compatibility : bool (default=True)
         Adds a surface compatibility check to the builder
 
     solid : bool (default=True)
         Creates a solid object from the loft if True
-    
+
     first_vertex : TopoDS_Vertex (optional, default=None)
         The starting vertex of the surface to add to the 'ThruSections'
         algorithm
@@ -650,7 +654,7 @@ def AddSurfaceLoft(objs, continuity=GeomAbs_C2, check_compatibility=True,
     -------
     shape : TopoDS_Shape
         The generated loft surface
-    
+
     Notes
     -----
     Uses OCC.BRepOffsetAPI.BRepOffsetAPI_ThruSections. This function is
@@ -775,23 +779,24 @@ def Uniform_Points_on_Curve(curve, NPoints):
         # Allow the algorithm to deal with TopoDS_Edge and Wire shapes:
         adapt = BRepAdaptor_Curve(curve)
     absc = GCPnts_UniformAbscissa(adapt, NPoints)
-    return [adapt.Value(absc.Parameter(i)) for i in range(1, NPoints+1)]
+    return [adapt.Value(absc.Parameter(i)) for i in range(1, NPoints + 1)]
+
 
 def rotate(brep, axe, degree, copy=False):
     """Rotates the brep
-    
+
     Originally from pythonocc-utils : might add dependency on this?
 
     Parameters
     ----------
     brep : shape to rotate
-    
+
     axe : axis of rotation
-    
+
     degree : Number of degrees to rotate through
-    
+
     copy : bool (default=False)
-    
+
     Returns
     -------
     BRepBuilderAPI_Transform.Shape : Shape handle
@@ -822,12 +827,12 @@ def mirror(brep, plane='xz', axe2=None, copy=False):
         The axes through which to mirror (overwrites input 'plane')
 
     copy : bool
-        
+
     Returns
     -------
     BRepBuilderAPI_Transform.Shape : TopoDS_Shape
         The reflected shape
-    
+
     Notes
     -----
     Pchambers: Added a functionality here to specify a plane using a string so
@@ -835,7 +840,7 @@ def mirror(brep, plane='xz', axe2=None, copy=False):
     if axe2:
         plane = None
     else:
-        Orig = gp_Pnt(0., 0., 0.)        
+        Orig = gp_Pnt(0., 0., 0.)
         if plane in ['xz', 'zx']:
             ydir = gp_Dir(0, 1, 0)
             axe2 = gp_Ax2(Orig, ydir)
@@ -854,7 +859,7 @@ def mirror(brep, plane='xz', axe2=None, copy=False):
 
 
 # TODO: Curve fairing functions
-#def batten_curve(pt1, pt2, height, slope, angle1, angle2):
+# def batten_curve(pt1, pt2, height, slope, angle1, angle2):
 #    fc = FairCurve_MinimalVariation(pt1, pt2, height, slope)
 #    fc.SetConstraintOrder1(2)
 #    fc.SetConstraintOrder2(2)
@@ -869,7 +874,7 @@ def mirror(brep, plane='xz', axe2=None, copy=False):
 #    return fc.Curve()
 #
 #
-#def faircurve(event=None):
+# def faircurve(event=None):
 #    pt1 = gp_Pnt2d(0., 0.)
 #    pt2 = gp_Pnt2d(0., 120.)
 #    height = 100.
@@ -899,7 +904,7 @@ def make_wire(*args):
     if isinstance(args[0], list) or isinstance(args[0], tuple):
         wire = BRepBuilderAPI_MakeWire()
         for i in args[0]:
-                wire.Add(i)
+            wire.Add(i)
         wire.Build()
         return wire.Wire()
 
@@ -1003,6 +1008,7 @@ def PlanarSurf(geomcurve):
     face = make_face(wire)
     return face
 
+
 def project_curve_to_plane(curve, plane, direction):
     """
     Computes and returns the cylindrically projected curve onto input plane
@@ -1027,9 +1033,9 @@ def project_curve_to_plane(curve, plane, direction):
     h_pln = coerce_handle(plane)
 
     Hproj_curve = geomprojlib_ProjectOnPlane(hc,
-                                      h_pln,
-                                      direction,
-                                      True)
+                                             h_pln,
+                                             direction,
+                                             True)
 
     return Hproj_curve
 
@@ -1041,7 +1047,7 @@ def project_curve_to_surface(curve, surface, dir):
     Parameters
     ----------
     curve : Geom_curve or TopoDS_Edge/Wire
-    
+
     surface : TopoDS_Shape
 
     dir : gp_Dir
@@ -1054,9 +1060,9 @@ def project_curve_to_surface(curve, surface, dir):
     try:
         edge = make_edge(curve)
     except:
-#        if converting to edge didn't work, assume curve is already an edge
+        #        if converting to edge didn't work, assume curve is already an edge
         edge = curve
-    
+
     wire = make_wire(edge)   # This will return wire is curve is already a wire
     from OCC.Core.BRepProj import BRepProj_Projection
     from OCC.Core.BRepAdaptor import BRepAdaptor_CompCurve
@@ -1107,8 +1113,8 @@ def points_from_intersection(plane, curve):
 # TODO: Network surface function needs fixing
 # def Add_Network_Surface(curvenet, deg=3, initsurf=None):
 #     '''Adds a surface from curve network using the OCC plate surface algorithm
-    
-#     This function is in development and currently raises an error 
+
+#     This function is in development and currently raises an error
 
 #     Parameters
 #     ----------
@@ -1191,7 +1197,7 @@ def CutSect(Shape, SpanStation):
 
     P = gp_Pln(gp_Pnt(OriginX, YStation, OriginZ), gp_Dir(gp_Vec(0, 1, 0)))
     # Note: using 2*extents here as previous +1 trimmed plane too short
-    CutPlaneSrf = make_face(P, 0, Zmax + 2, 0, Xmax +2)
+    CutPlaneSrf = make_face(P, 0, Zmax + 2, 0, Xmax + 2)
 
     I = BRepAlgoAPI_Section(Shape, CutPlaneSrf)
     I.ComputePCurveOn1(True)
@@ -1264,9 +1270,9 @@ def TrimShapebyPlane(Shape, Plane, pnt=gp_Pnt(0, -10, 0)):
     Parameters
     ----------
     Shape : TopoDS_Shape
-    
+
     Plane : expect TopoDS_Face
-    
+
     pnt : point defining which side of the halfspace contains its mass
     """
     tool = BRepPrimAPI_MakeHalfSpace(Plane, pnt).Solid()
