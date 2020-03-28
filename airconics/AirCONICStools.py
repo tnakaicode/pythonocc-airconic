@@ -8,54 +8,54 @@ Created on Fri Dec  4 11:58:52 2015
 """
 # Geometry Manipulation libraries:
 import OCC.Bnd
-from OCC.AIS import AIS_WireFrame, AIS_Shape
-from OCC.Geom import Geom_BezierCurve
-from OCC.GeomAPI import (GeomAPI_PointsToBSpline, GeomAPI_IntCS,
+from OCC.Core.AIS import AIS_WireFrame, AIS_Shape
+from OCC.Core.Geom import Geom_BezierCurve
+from OCC.Core.GeomAPI import (GeomAPI_PointsToBSpline, GeomAPI_IntCS,
                          GeomAPI_Interpolate)
-from OCC.BRepBndLib import brepbndlib_Add
-from OCC.TColgp import (TColgp_Array1OfPnt, TColgp_HArray1OfPnt,
+from OCC.Core.BRepBndLib import brepbndlib_Add
+from OCC.Core.TColgp import (TColgp_Array1OfPnt, TColgp_HArray1OfPnt,
                         TColgp_Array1OfVec)
-from OCC.TColStd import TColStd_HArray1OfBoolean
-from OCC.BRepOffsetAPI import  (BRepOffsetAPI_ThruSections,
+from OCC.Core.TColStd import TColStd_HArray1OfBoolean
+from OCC.Core.BRepOffsetAPI import  (BRepOffsetAPI_ThruSections,
                                 BRepOffsetAPI_MakePipeShell)
-from OCC.BRepBuilderAPI import (BRepBuilderAPI_MakeWire,
+from OCC.Core.BRepBuilderAPI import (BRepBuilderAPI_MakeWire,
                                 BRepBuilderAPI_MakeEdge,
                                 BRepBuilderAPI_Transform,
                                 BRepBuilderAPI_MakeFace,
                                 BRepBuilderAPI_GTransform,
                                 BRepBuilderAPI_MakeVertex)
-from OCC.BRepPrimAPI import (BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCone,
+from OCC.Core.BRepPrimAPI import (BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCone,
                              BRepPrimAPI_MakeHalfSpace,
                              BRepPrimAPI_MakeSphere)
-from OCC.BRepAlgoAPI import BRepAlgoAPI_Section, BRepAlgoAPI_Cut
-from OCC.gp import (gp_Trsf, gp_Ax2, gp_Pnt, gp_Dir, gp_Vec, gp_Pln,
+from OCC.Core.BRepAlgoAPI import BRepAlgoAPI_Section, BRepAlgoAPI_Cut
+from OCC.Core.gp import (gp_Trsf, gp_Ax2, gp_Pnt, gp_Dir, gp_Vec, gp_Pln,
                     gp_GTrsf, gp_Mat, gp_XYZ)
-from OCC.GeomAbs import GeomAbs_C2
-from OCC.TopoDS import *
-from OCC.TopAbs import *
-from OCC.TopExp import TopExp_Explorer
-from OCC.GC import GC_MakeCircle, GC_MakeSegment
-from OCC.Approx import Approx_ChordLength
-from OCC.GCPnts import GCPnts_UniformAbscissa
-from OCC.GeomAdaptor import GeomAdaptor_Curve, GeomAdaptor_HCurve
-from OCC.GeomPlate import (GeomPlate_CurveConstraint,
+from OCC.Core.GeomAbs import GeomAbs_C2
+from OCC.Core.TopoDS import *
+from OCC.Core.TopAbs import *
+from OCC.Core.TopExp import TopExp_Explorer
+from OCC.Core.GC import GC_MakeCircle, GC_MakeSegment
+from OCC.Core.Approx import Approx_ChordLength
+from OCC.Core.GCPnts import GCPnts_UniformAbscissa
+from OCC.Core.GeomAdaptor import GeomAdaptor_Curve, GeomAdaptor_HCurve
+from OCC.Core.GeomPlate import (GeomPlate_CurveConstraint,
                            GeomPlate_BuildPlateSurface,
                            GeomPlate_MakeApprox)
-from OCC.BRepAdaptor import BRepAdaptor_Curve
-from OCC.BRepFeat import BRepFeat_SplitShape
-from OCC.TopTools import TopTools_ListIteratorOfListOfShape
-from OCC.BRepProj import BRepProj_Projection
+from OCC.Core.BRepAdaptor import BRepAdaptor_Curve
+from OCC.Core.BRepFeat import BRepFeat_SplitShape
+from OCC.Core.TopTools import TopTools_ListIteratorOfListOfShape
+from OCC.Core.BRepProj import BRepProj_Projection
 
 # FileIO libraries:
-from OCC.STEPCAFControl import STEPCAFControl_Writer
-from OCC.STEPControl import STEPControl_Writer, STEPControl_AsIs
-from OCC.Interface import Interface_Static_SetCVal
-from OCC.IFSelect import IFSelect_RetDone
-from OCC.TDF import TDF_LabelSequence
-from OCC.TCollection import TCollection_ExtendedString
-from OCC.TDocStd import Handle_TDocStd_Document
-from OCC.XCAFApp import XCAFApp_Application
-from OCC.XCAFDoc import (XCAFDoc_DocumentTool_ShapeTool,
+from OCC.Core.STEPCAFControl import STEPCAFControl_Writer
+from OCC.Core.STEPControl import STEPControl_Writer, STEPControl_AsIs
+from OCC.Core.Interface import Interface_Static_SetCVal
+from OCC.Core.IFSelect import IFSelect_RetDone
+from OCC.Core.TDF import TDF_LabelSequence
+from OCC.Core.TCollection import TCollection_ExtendedString
+from OCC.Core.TDocStd import Handle_TDocStd_Document
+from OCC.Core.XCAFApp import XCAFApp_Application
+from OCC.Core.XCAFDoc import (XCAFDoc_DocumentTool_ShapeTool,
                          XCAFDoc_DocumentTool_ColorTool,
                          XCAFDoc_DocumentTool_LayerTool,
                          XCAFDoc_DocumentTool_MaterialTool)
@@ -394,7 +394,7 @@ def FilletFaceCorners(face, radius):
     -------
     """
     vert_explorer = TopExp_Explorer(face, TopAbs_VERTEX)
-    from OCC.BRepFilletAPI import BRepFilletAPI_MakeFillet2d
+    from OCC.Core.BRepFilletAPI import BRepFilletAPI_MakeFillet2d
     fillet = BRepFilletAPI_MakeFillet2d(face)
     while vert_explorer.More():
         vertex = topods_Vertex(vert_explorer.Current())
@@ -428,7 +428,7 @@ def ExtrudeFace(face, vec=gp_Vec(1, 0, 0)):
     -----
     Uses BRepBuilderAPI_MakePrism
     """
-    from OCC.BRepPrimAPI import BRepPrimAPI_MakePrism
+    from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakePrism
     builder = BRepPrimAPI_MakePrism(face, vec)
     builder.Build()
     return builder.Shape()
@@ -664,7 +664,7 @@ def AddSurfaceLoft(objs, continuity=GeomAbs_C2, check_compatibility=True,
     args = [solid, ruled, pres3d]    # args (in order) for ThruSections
     generator = BRepOffsetAPI_ThruSections(*args)
     generator.SetMaxDegree(max_degree)
-#    from OCC.GeomAbs import GeomAbs_G1
+#    from OCC.Core.GeomAbs import GeomAbs_G1
     generator.SetParType(Approx_ChordLength)
     if first_vertex:
         generator.AddVertex(first_vertex)
@@ -974,8 +974,8 @@ def CalculateSurfaceArea(shape):
     Area : scalar
         Calculated surface area
     """
-    from OCC.BRepGProp import brepgprop_SurfaceProperties
-    from OCC.GProp import GProp_GProps
+    from OCC.Core.BRepGProp import brepgprop_SurfaceProperties
+    from OCC.Core.GProp import GProp_GProps
     System = GProp_GProps()
     brepgprop_SurfaceProperties(shape, System)
     Area = System.Mass()
@@ -1021,7 +1021,7 @@ def project_curve_to_plane(curve, plane, direction):
     -------
     Hproj_curve : Handle_Geom_Curve
     """
-    from OCC.GeomProjLib import geomprojlib_ProjectOnPlane
+    from OCC.Core.GeomProjLib import geomprojlib_ProjectOnPlane
 
     hc = coerce_handle(curve)
     h_pln = coerce_handle(plane)
@@ -1058,8 +1058,8 @@ def project_curve_to_surface(curve, surface, dir):
         edge = curve
     
     wire = make_wire(edge)   # This will return wire is curve is already a wire
-    from OCC.BRepProj import BRepProj_Projection
-    from OCC.BRepAdaptor import BRepAdaptor_CompCurve
+    from OCC.Core.BRepProj import BRepProj_Projection
+    from OCC.Core.BRepAdaptor import BRepAdaptor_CompCurve
     proj = BRepProj_Projection(wire, surface, dir)
     res_wire = proj.Current()
     res_curve = BRepAdaptor_CompCurve(res_wire).BSpline()

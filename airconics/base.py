@@ -14,11 +14,11 @@ from abc import abstractmethod
 from collections import MutableMapping
 import os
 from . import AirCONICStools as act
-from OCC.Graphic3d import Graphic3d_NOM_ALUMINIUM
-from OCC.TopoDS import TopoDS_Shape
-from OCC.StlAPI import StlAPI_Writer
-from OCC.AIS import AIS_Shape
-from OCC.gp import gp_Pnt
+from OCC.Core.Graphic3d import Graphic3d_NOM_ALUMINIUM
+from OCC.Core.TopoDS import TopoDS_Shape
+from OCC.Core.StlAPI import StlAPI_Writer
+from OCC.Core.AIS import AIS_Shape
+from OCC.Core.gp import gp_Pnt
 
 
 class AirconicsBase(MutableMapping, object):

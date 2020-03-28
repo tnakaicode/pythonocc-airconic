@@ -4,7 +4,7 @@ sys.path.append('../..')
 import WebServer.TornadoWeb
 import tornado.ioloop
 
-from OCC.BRepPrimAPI import BRepPrimAPI_MakeTorus
+from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakeTorus
 
 renderer = WebServer.TornadoWeb.TornadoWebRenderer()
 

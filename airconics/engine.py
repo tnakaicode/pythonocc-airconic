@@ -11,9 +11,9 @@ from .liftingsurface import LiftingSurface
 from .base import AirconicsShape
 import numpy as np
 from .examples import wing_example_transonic_airliner as wingex
-from OCC.gp import gp_Pnt, gp_Vec, gp_OY, gp_Dir
-from OCC.Geom import Handle_Geom_Circle
-from OCC.GC import GC_MakeSegment
+from OCC.Core.gp import gp_Pnt, gp_Vec, gp_OY, gp_Dir
+from OCC.Core.Geom import Handle_Geom_Circle
+from OCC.Core.GC import GC_MakeSegment
 
 
 class Engine(AirconicsShape):

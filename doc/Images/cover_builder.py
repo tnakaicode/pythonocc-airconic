@@ -5,8 +5,8 @@ Created on Tue Apr 26 12:10:24 2016
 @author: pchambers
 """
 
-from OCC.Graphic3d import Graphic3d_NOM_ALUMINIUM
-from OCC.gp import gp_Ax1, gp_Pnt, gp_Dir, gp_Vec
+from OCC.Core.Graphic3d import Graphic3d_NOM_ALUMINIUM
+from OCC.Core.gp import gp_Ax1, gp_Pnt, gp_Dir, gp_Vec
 
 from airconics.examples.wing_example_transonic_airliner import *
 import airconics.examples.boxwing as bw
@@ -15,8 +15,8 @@ from airconics.examples.tailplane_example_transonic_airliner import *
 from airconics import liftingsurface, engine, fuselage_oml
 import airconics.AirCONICStools as act
 
-from OCC.Quantity import Quantity_NOC_RED4, Quantity_NOC_WHITE, Quantity_NOC_BLUE4, Quantity_NOC_GRAY
-from OCC.Graphic3d import Graphic3d_NOM_SHINY_PLASTIC
+from OCC.Core.Quantity import Quantity_NOC_RED4, Quantity_NOC_WHITE, Quantity_NOC_BLUE4, Quantity_NOC_GRAY
+from OCC.Core.Graphic3d import Graphic3d_NOM_SHINY_PLASTIC
 
 
 def transonic_airliner(display=None,
@@ -440,11 +440,11 @@ if __name__ == "__main__":
     Airliner['Fuselage'].Display(display, color=white,  material=painted)
 
     display.ZoomFactor(10)
-    from OCC.V3d import *
+    from OCC.Core.V3d import *
 #    display.View.SetProj(V3d_XnegYnegZpos)
 
     display.Repaint()
-    from OCC.Graphic3d import Graphic3d_EF_PDF
+    from OCC.Core.Graphic3d import Graphic3d_EF_PDF
     display.View.View().GetObject().Export('./Airliner.pdf', Graphic3d_EF_PDF)
     
     start_display()

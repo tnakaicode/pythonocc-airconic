@@ -26,7 +26,7 @@ if __name__ == '__main__':
     from airconics import liftingsurface
     import airconics.AirCONICStools as act
 
-    from OCC.gp import gp_Ax1, gp_Pnt, gp_Dir
+    from OCC.Core.gp import gp_Ax1, gp_Pnt, gp_Dir
 
     # Position of the apex of the fin
     P = [36.98-0.49-0.02, 0.0, 2.395-0.141]

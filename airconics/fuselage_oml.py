@@ -21,10 +21,10 @@ from . import AirCONICStools as act
 import numpy as np
 from .base import AirconicsShape
 
-from OCC.gp import gp_Pnt, gp_Vec, gp_Pln, gp_Dir, gp_Ax2
-from OCC.Geom import Handle_Geom_BSplineCurve, Geom_Plane
-from OCC.GeomAbs import GeomAbs_C2
-from OCC.TopoDS import topods
+from OCC.Core.gp import gp_Pnt, gp_Vec, gp_Pln, gp_Dir, gp_Ax2
+from OCC.Core.Geom import Handle_Geom_BSplineCurve, Geom_Plane
+from OCC.Core.GeomAbs import GeomAbs_C2
+from OCC.Core.TopoDS import topods
 
 
 class Fuselage(AirconicsShape):
@@ -364,7 +364,7 @@ class Fuselage(AirconicsShape):
                         FirstTime = False
                     PseudoRadius = PseudoDiameter / 2.
                     # Note: Add Circle with radius PseudoRadius at Pc
-                    from OCC.GC import GC_MakeCircle
+                    from OCC.Core.GC import GC_MakeCircle
                     c = GC_MakeCircle(gp_Ax2(IPointCentre, gp_Dir(1, 0, 0)),
                                       PseudoRadius).Value()
 

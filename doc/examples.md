@@ -153,7 +153,7 @@ The same `Lifting Surface` class is used here to generate the fin and tailplane 
 
 
 ```python
-from OCC.gp import gp_Ax1, gp_Pnt, gp_Dir
+from OCC.Core.gp import gp_Ax1, gp_Pnt, gp_Dir
 from airconics.examples.tailplane_example_transonic_airliner import *
 
 # Position of the apex of the fin
@@ -381,7 +381,7 @@ topo.AddPart(Fus, 'Fuselage', 3)
 topo.AddPart(Fin, 'Fin', 0)
 
 # Need to add a mirror plane here, arity zero
-from OCC.gp import gp_Ax2, gp_Dir, gp_Pnt
+from OCC.Core.gp import gp_Ax2, gp_Dir, gp_Pnt
 xz_pln = gp_Ax2(gp_Pnt(0, 0, 0), gp_Dir(0, 1, 0))
 topo.AddPart(xz_pln, 'Mirror', 0)
 

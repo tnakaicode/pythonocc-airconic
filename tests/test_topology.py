@@ -12,7 +12,7 @@ from airconics.topology import Topology
 from airconics.fuselage_oml import Fuselage
 from airconics.engine import Engine
 from airconics.liftingsurface import LiftingSurface
-from OCC.gp import gp_Ax2
+from OCC.Core.gp import gp_Ax2
 
 @pytest.fixture(params=[
     # a list of topologies and expected flattened lisp expressions

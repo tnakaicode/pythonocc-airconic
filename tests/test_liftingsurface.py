@@ -11,7 +11,7 @@ import airconics.AirCONICStools as act
 from airconics.examples.wing_example_transonic_airliner import *
 from airconics.examples.straight_wing import *
 
-from OCC.gp import gp_Pnt
+from OCC.Core.gp import gp_Pnt
 import pytest
 
 
@@ -223,7 +223,7 @@ def test_update_ApexPoint():
 
     # By adding a point to the wing, we will see if the move transformation
     # has been performed when the ApexPoint attribute is changed:
-    from OCC.BRepBuilderAPI import BRepBuilderAPI_MakeVertex
+    from OCC.Core.BRepBuilderAPI import BRepBuilderAPI_MakeVertex
     v = BRepBuilderAPI_MakeVertex(gp_Pnt(0, 0, 0)).Vertex()
     wing['test_pnt'] = v
 
@@ -232,8 +232,8 @@ def test_update_ApexPoint():
     wing.ApexPoint = gp_Pnt(10, 10, 10)
 
     # Retrieve the vertex and point from the translated shape
-    from OCC.TopoDS import topods_Vertex
-    from OCC.BRep import BRep_Tool_Pnt
+    from OCC.Core.TopoDS import topods_Vertex
+    from OCC.Core.BRep import BRep_Tool_Pnt
     vout = topods_Vertex(wing['test_pnt'])
     p = BRep_Tool_Pnt(vout)
 

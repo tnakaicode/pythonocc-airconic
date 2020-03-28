@@ -11,7 +11,7 @@ from .base import AirconicsCollection
 from .liftingsurface import LiftingSurface
 from .fuselage_oml import Fuselage
 from .engine import Engine
-from OCC.gp import gp_Ax2
+from OCC.Core.gp import gp_Ax2
 # import copy
 # import numpy as np
 

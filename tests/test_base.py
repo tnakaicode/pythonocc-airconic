@@ -9,8 +9,8 @@ Created on Fri Apr 29 10:04:41 2016
 """
 import pytest
 import airconics.AirCONICStools as act
-from OCC.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeSphere
-from OCC.gp import gp_Pnt
+from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeSphere
+from OCC.Core.gp import gp_Pnt
 import os
 from airconics.base import AirconicsCollection, AirconicsShape
 

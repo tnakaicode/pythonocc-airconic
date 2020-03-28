@@ -24,8 +24,8 @@ Created on Tue Feb 16 16:50:52 2016
 # Andras Sobester, 2015.
 # Bug reports to a.sobester@soton.ac.uk or @ASobester please.
 # ==============================================================================
-from OCC.Graphic3d import Graphic3d_NOM_ALUMINIUM
-from OCC.gp import gp_Ax1, gp_Pnt, gp_Dir
+from OCC.Core.Graphic3d import Graphic3d_NOM_ALUMINIUM
+from OCC.Core.gp import gp_Ax1, gp_Pnt, gp_Dir
 
 from airconics.examples.wing_example_transonic_airliner import *
 import airconics.examples.boxwing as bw
@@ -383,9 +383,9 @@ def transonic_airliner(display=None,
 #    airliner.Display(display)
 
 #    Set individual component colours and materials:
-    from OCC.Quantity import (Quantity_NOC_RED4, Quantity_NOC_WHITE, 
+    from OCC.Core.Quantity import (Quantity_NOC_RED4, Quantity_NOC_WHITE, 
                               Quantity_NOC_BLUE4, Quantity_NOC_GRAY)
-    from OCC.Graphic3d import Graphic3d_NOM_SHINY_PLASTIC
+    from OCC.Core.Graphic3d import Graphic3d_NOM_SHINY_PLASTIC
     red = Quantity_NOC_RED4
     white =  Quantity_NOC_WHITE
     blue = Quantity_NOC_BLUE4
@@ -457,7 +457,7 @@ if __name__ == "__main__":
 #    Airliner.Write(filename, single_export=True)
 
     # To output the rendering as pdf:
-#    from OCC.Graphic3d import (Graphic3d_EF_PDF,
+#    from OCC.Core.Graphic3d import (Graphic3d_EF_PDF,
 #                           Graphic3d_EF_PostScript)
 #    display.View.View().GetObject().Export('./Airliner.pdf', Graphic3d_EF_PDF)
 

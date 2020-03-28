@@ -6,7 +6,7 @@ Created on Thu Jan  7 13:49:32 2016
 """
 import airconics.AirCONICStools as act
 import numpy as np
-from OCC.gp import gp_Pnt, gp_Dir, gp_Vec
+from OCC.Core.gp import gp_Pnt, gp_Dir, gp_Vec
 import pytest
 
 def test_coslin():
@@ -54,9 +54,9 @@ def test_points_to_bspline_nparray():
 def test_project_curve_to_plane():
     # Projects a line of length 1 from above the XOY plane, and tests points
     # on the resulting line
-    from OCC.Geom import Geom_Plane, Geom_TrimmedCurve
-    from OCC.GC import GC_MakeSegment
-    from OCC.gp import gp_Ax3, gp_XOY, gp_Pnt, gp_Dir
+    from OCC.Core.Geom import Geom_Plane, Geom_TrimmedCurve
+    from OCC.Core.GC import GC_MakeSegment
+    from OCC.Core.gp import gp_Ax3, gp_XOY, gp_Pnt, gp_Dir
     XOY = Geom_Plane(gp_Ax3(gp_XOY()))
     curve = GC_MakeSegment(gp_Pnt(0, 0, 5),
                            gp_Pnt(1, 0, 5)).Value()
@@ -92,7 +92,7 @@ def test_project_curve_to_surface():
     spline = act.points_to_bspline(pnts)
 
     # Surface to project onto:
-    from OCC.GC import GC_MakeCircle
+    from OCC.Core.GC import GC_MakeCircle
     circle = GC_MakeCircle(gp_Pnt(0,0,0), gp_Dir(0, 1, 0), 10).Value()
     edge = act.make_edge(circle)
     face = act.make_face(act.make_wire(edge))
@@ -113,7 +113,7 @@ def test_CalculateSurfaceArea():
     function works for a variety of different OCC objects - PChambers
     """
     # A flat square edge lengths 1
-    from OCC.BRepBuilderAPI import BRepBuilderAPI_MakePolygon
+    from OCC.Core.BRepBuilderAPI import BRepBuilderAPI_MakePolygon
     p1 = gp_Pnt(0, 0, 0)
     p2 = gp_Pnt(1, 0, 0)
     p3 = gp_Pnt(1, 1, 0)
@@ -125,7 +125,7 @@ def test_CalculateSurfaceArea():
     assert(np.abs(act.CalculateSurfaceArea(surf1) - 1) < tol)
 
     # A sphere with radius 1
-    from OCC.BRepPrimAPI import BRepPrimAPI_MakeSphere
+    from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakeSphere
     r = 1
     # The tolerance need to be relaxed a bit for this case
     tol = 1e-04

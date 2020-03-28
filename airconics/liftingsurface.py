@@ -19,9 +19,9 @@ from .base import AirconicsShape
 from .primitives import Airfoil
 from . import AirCONICStools as act
 
-from OCC.gp import gp_Pnt, gp_Vec, gp_XOY, gp_Ax3, gp_Dir
-from OCC.GeomAbs import GeomAbs_C2
-from OCC.Geom import Geom_Plane
+from OCC.Core.gp import gp_Pnt, gp_Vec, gp_XOY, gp_Ax3, gp_Dir
+from OCC.Core.GeomAbs import GeomAbs_C2
+from OCC.Core.Geom import Geom_Plane
 
 
 def airfoilfunct(ProfileFunct):

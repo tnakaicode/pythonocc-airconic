@@ -6,8 +6,8 @@ Created on Fri Dec  4 13:31:35 2015
 
 @author: pchambers
 """
-from OCC.GC import GC_MakeSegment
-from OCC.gp import gp_Pnt, gp_Vec, gp_OX, gp_OY
+from OCC.Core.GC import GC_MakeSegment
+from OCC.Core.gp import gp_Pnt, gp_Vec, gp_OX, gp_OY
 
 from . import CRMfoil
 from . import AirCONICStools as act
